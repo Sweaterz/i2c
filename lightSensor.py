@@ -24,8 +24,9 @@ if __name__ == '__main__':
             lumi30 = read_sensor_data(BH1730, default_value=-1)
             formatted_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             if lumi15 == -1 or lumi30 == -1:
-                content = f"{formatted_time}    ERROR: Fail to get light sensor data. \n"
+                content = formatted_time + " ERROR: Fail to get light sensor data. \n"
             else:
-                content = f"{formatted_time}    BH1715: {lumi15}lux    BH1730: {lumi30}lux\n"
+                content = formatted_time + " BH1715: {:.2f}lux    BH1730: {:.2f}lux\n".format(lumi15, lumi30)
+            print(content, end="")
             file.write(content)
             time.sleep(sleep_interval)

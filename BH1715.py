@@ -32,7 +32,7 @@ def detect():
     lumi = (data[0] * 256 + data[1]) / 1.2
 
     # Output data to screen
-    print("Ambient Light luminance : %.2f lux" %lumi)
+    # print("Ambient Light luminance : %.2f lux" %lumi)
     return lumi
 
 
@@ -50,6 +50,3 @@ if __name__ == '__main__':
             print("Dark")
         elif luminance < 20:
             print("Too Dark")
-
-
-

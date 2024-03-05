@@ -2,15 +2,15 @@ import smbus
 import time
 
 
-def light():
+def detect():
     # Get I2C bus     Select Bus 0 aka i2c-0
     bus = smbus.SMBus(0)
 
     # BH1730 address, 0x29(41)
     # Send power on command
     #               0x10        Power On
-    bus.write_byte(0x29, 0x10)
-    bus.write_byte(0x29, 0x05)
+    bus.write_byte(0x29, 0x80)
+    bus.write_byte(0x29, 0x0B)
 
     time.sleep(0.5)
 
@@ -29,8 +29,11 @@ def light():
     ITIME_ms = Tint * 964 * (256 - ITIME)
     data0 = data[0] + data[1] * 256
     data1 = data[2] + data[3] * 256
-    print("data0:%d" % data0)
-    print("data1:%d" % data1)
+    # print("data0:%d" % data0)
+    # print("data1:%d" % data1)
+    if data0 == 0:
+        print("Error: BH 1730 fail to get data.")
+        return 0
 
     if data1 / data0 < 0.26:
         lumi = (1.290 * data0 - 2.733 * data1) / gain * 102.6 / ITIME_ms
@@ -44,7 +47,7 @@ def light():
         lumi = 0
 
     # Output data to screen
-    print("Ambient Light luminance : %.2f lux" % lumi)
+    # print("Ambient Light luminance : %.2f lux" % lumi)
     return lumi
 
 
@@ -63,6 +66,6 @@ def describeLight(luminance):
 
 if __name__ == '__main__':
     while True:
-        luminance = light()
+        luminance = detect()
         print(luminance)
     # describeLight(luminance)
