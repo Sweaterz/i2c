@@ -16,9 +16,10 @@ if __name__ == '__main__':
     log_format = ".txt"
     file_name = f"{time.strftime('%Y-%m-%d', time.localtime())}{log_format}"
     sleep_interval = 1  # 数据采集间隔时间
+    round = 10 # 采集次数
 
     with open(file_name, 'a') as file:
-        for i in range(10):
+        for i in range(round):
             lumi15 = read_sensor_data(BH1715, default_value=-1)
             lumi30 = read_sensor_data(BH1730, default_value=-1)
             formatted_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
