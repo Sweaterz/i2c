@@ -34,8 +34,8 @@ def plot_data(x, y1, y2):
     """Plot data"""
     plt.figure(figsize=(20, 10), dpi=200)
     plt.grid()
-    plt.bar(x[::10], y1[::10], label="BH1715")
-    plt.bar(x[::10], y2[::10], label="BH1730")
+    plt.plot(x[::10], y1[::10], label="BH1715")
+    plt.plot(x[::10], y2[::10], label="BH1730")
     plt.xlabel("time")
     plt.ylabel("Luminance/lux")
     plt.xticks(rotation='vertical')
