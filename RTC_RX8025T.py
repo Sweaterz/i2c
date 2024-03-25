@@ -1,9 +1,10 @@
 import smbus
 import os
 import time
-import datetime
+from datetime import datetime
 
 
+# 数据转换：  hex --> BCD  用于读取数据
 def hex2BCD(hexNum):
     if 0 <= hexNum <= 255:
         return hexNum // 16 * 10 + hexNum % 16
@@ -11,6 +12,7 @@ def hex2BCD(hexNum):
         return -1
 
 
+# 数据转换：int --> BCD 用于写入数据
 def int2BCD(intNum):
     if 0 <= intNum <= 99:
         return intNum // 10 * 16 + intNum % 10
@@ -18,6 +20,7 @@ def int2BCD(intNum):
         return -1
 
 
+# 读取RX8025的时间
 def readTime():
     # I2C总线0是默认的
     bus = smbus.SMBus(0)
@@ -45,7 +48,8 @@ def readTime():
     return date
 
 
-def writeTime():
+# 写入时间到RX8025
+def writeTime(date = []):
     # I2C总线0是默认的
     bus = smbus.SMBus(0)
 
@@ -55,12 +59,17 @@ def writeTime():
     # 寄存器地址
     REGISTER_ADDRESSES = [0x00, 0x01, 0x02, 0x04, 0x05, 0x06]  # 要读取的寄存器地址
     stringDate = ["second", "minute", "hour", "dayOfMonth", "month", "year"]
-    date = []
-    for i in range(6):
-        tempValue = int(input("please input " + stringDate[i] + ":"))
-        if stringDate[i] == "year":
-            tempValue = tempValue % 2000
-        date.append(int2BCD(tempValue))
+
+    # 如果date的长度等于0那么要进行赋值（只在alpha版本使用）
+    if len(date) == 0:
+        for i in range(6):
+            tempValue = int(input("please input " + stringDate[i] + ":"))
+            if stringDate[i] == "year":
+                tempValue = tempValue % 2000
+            date.append(int2BCD(tempValue))
+    else:
+        for i in range(6):
+            date[i] = int2BCD(date[i])
 
     # date = [second, minute, hour, dayOfMonth, month, year]
     # 寄存器的值
@@ -76,17 +85,31 @@ def writeTime():
     return date
 
 
+# 设定系统时间
 def setSysTime(date_str):
-    date = datetime.datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+    date = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
     timestamp = time.mktime(date.timetuple())
     os.system('sudo date -s @"{:.0f}"'.format(timestamp))
 
 
+# 得到系统时间
+def getSysTime():
+    current = datetime.now()
+    return [current.second, current.minute, current.hour, current.day, current.month, current.year]
+
+
+# 硬件时间录入系统时间
 def hcToSys():
     date = readTime()
     date_str = f"20{date[5]:02}-{date[4]:02}-{date[3]:02} {date[2]:02}:{date[1]:02}:{date[0]:02}"
     setSysTime(date_str)
 
 
+# 系统时间写入硬件时间
+def sysToHc():
+    date = getSysTime()
+    writeTime(date)
+
+
 if __name__ == "__main__":
-    writeTime()
+    sysToHc()
