@@ -69,7 +69,12 @@ def writeTime(date = []):
             date.append(int2BCD(tempValue))
     else:
         for i in range(6):
-            date[i] = int2BCD(date[i])
+            # 如果是年则需要对2000取余
+            if i == 5:
+                date[i] = int2BCD(date[i] % 2000)
+            else:
+                date[i] = int2BCD(date[i])
+            
 
     # date = [second, minute, hour, dayOfMonth, month, year]
     # 寄存器的值
@@ -81,7 +86,7 @@ def writeTime(date = []):
 
     # 关闭I2C通信
     bus.close()
-    print(f"have writen 20{date[5]:02}-{date[4]:02}-{date[3]:02} {date[2]:02}:{date[1]:02}:{date[0]:02} to register.")
+    print(f"have writen 20{date[5]:02X}-{date[4]:02X}-{date[3]:02X} {date[2]:02X}:{date[1]:02X}:{date[0]:02X} to register.")
     return date
 
 
